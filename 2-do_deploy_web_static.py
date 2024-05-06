@@ -1,35 +1,49 @@
 #!/usr/bin/python3
-from fabric.api import env, local, run, put
+from fabric.api import env, local, put, run
+from os.path import exists, basename
 
-env.hosts = ['100.26.244.231', '100.26.173.249:']
-env.user = 'ubuntu'
-env.key_filename = 'my_ssh_private_key'
+env.hosts = ['100.26.244.231', '100.26.173.249']
+
 
 def do_deploy(archive_path):
     """
-    Distributes an archive to the web servers.
-    Args:
-        archive_path (str): The path of the archive to be deployed.
-    Returns:
-        bool: True if the deployment was successful, False otherwise.
+    Deploys an archive to the web servers.
     """
+    if not exists(archive_path):
+        return False
+
+    archive_name = basename(archive_path)
+    archive_name_no_ext = archive_name.split(".")[0]
+    remote_tmp_path = f"/tmp/{archive_name}"
+    remote_release_path = f"/data/web_static/releases/{archive_name_no_ext}"
+
     try:
-        if not local("stat {}".format(archive_path), capture=True):
-            return False
-        put(archive_path, "/tmp/")
-        filename = archive_path.split("/")[-1]
-        release_folder = ("/data/web_static/releases/{}"
-                          .format(filename.replace(".tgz", ""))
-                          )
-        run("mkdir -p {}".format(release_folder))
-        run("tar -xzf /tmp/{} -C {}".format(filename, release_folder))
-        run("mv {}/web_static/* {}/".format(release_folder, release_folder))
-        run("rm -rf {}/web_static".format(release_folder))
-        run("rm /tmp/{}".format(filename))
-        run("rm -rf /data/web_static/current")
-        run("ln -s {} /data/web_static/current".format(release_folder))
+        # Upload archive to the /tmp/ directory
+        put(archive_path, remote_tmp_path)
+
+        # Create the release directory
+        run(f"mkdir -p {remote_release_path}")
+
+        # Uncompress the archive to the release directory
+        run(f"tar -xzf {remote_tmp_path} -C {remote_release_path}")
+
+        # Delete the archive from the /tmp/ directory
+        run(f"rm {remote_tmp_path}")
+
+        # Move content from web_static folder to the release directory
+        run(f"mv {remote_release_path}/web_static/* {remote_release_path}/")
+
+        # Delete the web_static folder
+        run(f"rm -rf {remote_release_path}/web_static")
+
+        # Delete the current symlink
+        run(f"rm -rf /data/web_static/current")
+
+        # Create a new symlink to the release directory
+        run(f"ln -s {remote_release_path} /data/web_static/current")
+
         print("New version deployed!")
         return True
     except Exception as e:
-        print(e)
+        print(f"An error occurred: {e}")
         return False
