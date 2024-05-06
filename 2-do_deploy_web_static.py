@@ -1,7 +1,7 @@
 #!/usr/bin/python3
 from fabric.api import env, local, run, put
 
-env.hosts = ['<IP_WEB-01>', '<IP_WEB-02>']
+env.hosts = ['100.26.244.231', '100.26.173.249:']
 env.user = 'ubuntu'
 env.key_filename = 'my_ssh_private_key'
 
