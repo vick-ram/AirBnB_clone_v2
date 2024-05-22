@@ -22,3 +22,7 @@ def hbnb():
 def c_is_fun():
     """Function to return a text with passed variable"""
     return f"C {escape(text)}"
+
+
+if __name__ == "__main__":
+    app.run(host='0.0.0.0', port=5000)
