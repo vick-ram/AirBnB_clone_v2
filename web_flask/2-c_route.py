@@ -23,11 +23,5 @@ def c_is_fun(text):
     return f"C {text.replace('_', ' ')}"
 
 
-@app.route('/<path:path>', strict_slashes=False)
-def catch_all(path):
-    """redirect function handler"""
-    return redirect("/")
-
-
 if __name__ == "__main__":
     app.run(host='0.0.0.0', port=5000)
