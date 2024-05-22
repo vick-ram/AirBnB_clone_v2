@@ -1,7 +1,6 @@
 #!/usr/bin/python3
 """Receive a path variable"""
-from flask import Flask
-from markupsafe import escape
+from flask import Flask, redirect
 
 app = Flask(__name__)
 
@@ -21,7 +20,7 @@ def hbnb():
 @app.route('/c/<text>', strict_slashes=False)
 def c_is_fun():
     """Function to return a text with passed variable"""
-    return f"C {escape(text)}"
+    return f"C {text.replace('_', ' ')}"
 
 
 if __name__ == "__main__":
