@@ -18,9 +18,15 @@ def hbnb():
 
 
 @app.route('/c/<text>', strict_slashes=False)
-def c_is_fun():
+def c_is_fun(text):
     """Function to return a text with passed variable"""
     return f"C {text.replace('_', ' ')}"
+
+
+@app.route('/<path:path>', strict_slashes=False)
+def catch_all(path):
+    """redirect function handler"""
+    return redirect("/")
 
 
 if __name__ == "__main__":
