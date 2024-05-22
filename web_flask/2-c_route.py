@@ -5,15 +5,17 @@ from markupsafe import escape
 
 app = Flask(__name__)
 
+
 @app.route("/", strict_slashes=False)
 def hello():
     """Hello function"""
     return "Hello HBNB!"
 
+
 @app.route("/hbnb", strict_slashes=False)
 def hbnb():
     """HBNB funtion"""
-    return “HBNB”
+    return "HBNB"
 
 
 @app.route('/c/<text>', strict_slashes=False)
